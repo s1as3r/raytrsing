@@ -1,9 +1,8 @@
 use std::ops;
 
-type Point = Vec3;
-type Color = Vec3;
+pub type Point3 = Vec3;
 
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Vec3 {
     e: [f64; 3],
 }
