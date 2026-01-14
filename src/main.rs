@@ -1,6 +1,7 @@
 #![allow(dead_code, unused)]
 mod color;
 mod hittable;
+mod interval;
 mod ray;
 mod util;
 mod vec3;
@@ -10,6 +11,7 @@ use std::io::{Write, stdout};
 use crate::{
     color::{Color, write_color},
     hittable::{HitRecord, Hittable, list::HittableList, sphere::Sphere},
+    interval::Interval,
     ray::Ray,
     util::lerp,
     vec3::{Point3, Vec3},
@@ -64,18 +66,9 @@ fn main() {
     eprintln!("\rDone.                        ");
 }
 
-fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
-    let mut hr = HitRecord::default();
-    if Sphere::new(center, radius).hit(r, 0.0, 1.0, &mut hr) {
-        hr.t
-    } else {
-        -1.0
-    }
-}
-
 fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
     let mut rec = HitRecord::default();
-    if (world.hit(r, 0.0, f64::INFINITY, &mut rec)) {
+    if (world.hit(r, &Interval::new(0.0, f64::INFINITY), &mut rec)) {
         return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
     }
     let unit_direction = Vec3::unit_vector(r.direction());

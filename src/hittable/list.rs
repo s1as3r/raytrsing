@@ -1,4 +1,7 @@
-use super::{HitRecord, Hittable};
+use crate::{
+    hittable::{HitRecord, Hittable},
+    interval::Interval,
+};
 
 #[derive(Default)]
 pub struct HittableList<'a> {
@@ -22,19 +25,13 @@ impl<'a> HittableList<'a> {
 }
 
 impl Hittable for HittableList<'_> {
-    fn hit(
-        &self,
-        r: &crate::ray::Ray,
-        ray_tmin: f64,
-        ray_tmax: f64,
-        rec: &mut super::HitRecord,
-    ) -> bool {
+    fn hit(&self, r: &crate::ray::Ray, ray_t: &Interval, rec: &mut HitRecord) -> bool {
         let mut temp_rec = HitRecord::default();
         let mut hit_anything = false;
-        let mut closest_so_far = ray_tmax;
+        let mut closest_so_far = ray_t.max;
 
         for &obj in &self.objects {
-            if (obj.hit(r, ray_tmin, ray_tmax, &mut temp_rec)) {
+            if (obj.hit(r, ray_t, &mut temp_rec)) {
                 hit_anything = true;
                 closest_so_far = temp_rec.t;
                 *rec = temp_rec.clone();
