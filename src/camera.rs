@@ -101,7 +101,7 @@ impl Camera {
         // point because of floating point imprecision
         // SEE: shadow acne
         if (world.hit(r, &Interval::new(0.001, f64::INFINITY), &mut rec)) {
-            let direction = Vec3::random_on_hemisphere(rng, &rec.normal);
+            let direction = rec.normal + Vec3::random_unit_vector(rng);
             return 0.5 * self.ray_color(&Ray::new(&rec.p, &direction), depth - 1, world, rng);
         }
 
