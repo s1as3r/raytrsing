@@ -26,6 +26,6 @@ fn main() {
     world.add(&sp2);
     world.add(&sp1);
 
-    let cam = Camera::new(16.0 / 10.0, 400);
+    let cam = Camera::new(16.0 / 10.0, 400, 100);
     cam.render(&world);
 }
