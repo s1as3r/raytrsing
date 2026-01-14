@@ -2,19 +2,18 @@
 mod color;
 mod hittable;
 mod ray;
+mod util;
 mod vec3;
 
 use std::io::{Write, stdout};
 
-use color::{Color, write_color};
-use ray::Ray;
-use vec3::Point3;
-
 use crate::{
-    hittable::{HitRecord, Hittable, sphere::Sphere},
-    vec3::Vec3,
+    color::{Color, write_color},
+    hittable::{HitRecord, Hittable, list::HittableList, sphere::Sphere},
+    ray::Ray,
+    util::lerp,
+    vec3::{Point3, Vec3},
 };
-use std::ops;
 
 fn main() {
     let aspect_ratio = 16.0 / 10.0;
@@ -24,6 +23,12 @@ fn main() {
         let h = (image_width as f64 / aspect_ratio) as i32;
         if h < 1 { 1 } else { h }
     };
+
+    let mut world = HittableList::default();
+    let sp1 = Sphere::new(&Point3::new(0.0, 0.0, -1.0), 0.5);
+    let sp2 = Sphere::new(&Point3::new(0.0, -100.5, -1.0), 100.0);
+    world.add(&sp2);
+    world.add(&sp1);
 
     let viewport_height = 2.0;
     let viewport_width = viewport_height * (image_width as f64 / image_height as f64);
@@ -51,19 +56,12 @@ fn main() {
             let ray_direction = pixel_center - camera_center;
 
             let r = Ray::new(&camera_center, &ray_direction);
-            let col = ray_color(&r);
+            let col = ray_color(&r, &world);
 
             write_color(&mut stdout(), &col);
         }
     }
     eprintln!("\rDone.                        ");
-}
-
-fn lerp<T>(start: T, end: T, t: f64) -> T
-where
-    T: ops::Mul<f64, Output = T> + ops::Add<Output = T>,
-{
-    start * (1.0 - t) + end * t
 }
 
 fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
@@ -75,11 +73,10 @@ fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
     }
 }
 
-fn ray_color(r: &Ray) -> Color {
-    let t = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, r);
-    if (t > 0.0) {
-        let normal = Vec3::unit_vector(&(r.at(t) - Vec3::new(0.0, 0.0, -1.0)));
-        return 0.5 * Color::new(normal.x() + 1.0, normal.y() + 1.0, normal.z() + 1.0);
+fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
+    let mut rec = HitRecord::default();
+    if (world.hit(r, 0.0, f64::INFINITY, &mut rec)) {
+        return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
     }
     let unit_direction = Vec3::unit_vector(r.direction());
     let a = 0.5 * (unit_direction.y() + 1.0);

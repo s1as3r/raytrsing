@@ -1,11 +1,12 @@
 pub mod sphere;
+pub mod list;
 
 use crate::{
     ray::Ray,
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct HitRecord {
     pub normal: Vec3,
     pub p: Point3,
