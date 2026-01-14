@@ -32,7 +32,7 @@ impl Hittable for HittableList<'_> {
         let mut rec = None;
 
         for &obj in &self.objects {
-            if let Some(t_rec) = obj.hit(r, ray_t) {
+            if let Some(t_rec) = obj.hit(r, &Interval::new(ray_t.min, closest_so_far)) {
                 hit_anything = true;
                 closest_so_far = t_rec.t;
                 rec = Some(t_rec)
