@@ -95,12 +95,10 @@ impl Camera {
             return Color::default();
         }
 
-        let mut rec = HitRecord::default();
-
         // min 0.001: we want to ignore hits that are very close to the intersection
         // point because of floating point imprecision
         // SEE: shadow acne
-        if (world.hit(r, &Interval::new(0.001, f64::INFINITY), &mut rec)) {
+        if let Some(rec) = world.hit(r, &Interval::new(0.001, f64::INFINITY)) {
             let direction = rec.normal + Vec3::random_unit_vector(rng);
             return 0.5 * self.ray_color(&Ray::new(&rec.p, &direction), depth - 1, world, rng);
         }

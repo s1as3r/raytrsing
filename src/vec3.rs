@@ -50,6 +50,11 @@ impl Vec3 {
         }
     }
 
+    pub fn near_zero(&self) -> bool {
+        const EPS: f64 = 1e-8;
+        self.e.iter().fold(true, |f, v| f && (v.abs() < EPS))
+    }
+
     #[inline]
     pub fn dot(u: &Vec3, v: &Vec3) -> f64 {
         u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
