@@ -16,6 +16,6 @@ impl Metal {
 impl Material for Metal {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord, _rng: &mut PCG32RNG) -> (Color, Ray) {
         let reflected = Vec3::reflect(r_in.direction(), &rec.normal);
-        (self.albedo, Ray::new(&rec.p, &reflected))
+        (self.albedo, Ray::new(rec.p, reflected))
     }
 }

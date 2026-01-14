@@ -25,6 +25,6 @@ impl Material for Lambertian {
             if sd.near_zero() { rec.normal } else { sd }
         };
 
-        return (self.albedo, Ray::new(&rec.p, &scatter_direction));
+        return (self.albedo, Ray::new(rec.p, scatter_direction));
     }
 }

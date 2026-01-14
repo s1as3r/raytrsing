@@ -121,7 +121,7 @@ impl Camera {
         let ray_origin = self.center;
         let ray_direction = pixel_sample - ray_origin;
 
-        Ray::new(&ray_origin, &ray_direction)
+        Ray::new(ray_origin, ray_direction)
     }
 
     fn sample_square(&self, rng: &mut PCG32RNG) -> Vec3 {
