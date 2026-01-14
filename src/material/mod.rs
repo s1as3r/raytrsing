@@ -8,5 +8,5 @@ pub use metal::Metal;
 
 pub trait Material {
     // returns: attenuatoin, scattered ray
-    fn scatter(&self, r_in: &Ray, rec: &HitRecord, rng: &mut PCG32RNG) -> (Color, Ray);
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord, rng: &mut PCG32RNG) -> Option<(Color, Ray)>;
 }

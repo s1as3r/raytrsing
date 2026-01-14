@@ -102,8 +102,10 @@ impl Camera {
         // point because of floating point imprecision
         // SEE: shadow acne
         if let Some(mut rec) = world.hit(r, &Interval::new(0.001, f64::INFINITY)) {
-            let (attenuation, scattered) = rec.mat.scatter(r, &rec, rng);
-            return attenuation * self.ray_color(&scattered, depth - 1, world, rng);
+            if let Some((attenuation, scattered)) = rec.mat.scatter(r, &rec, rng) {
+                return attenuation * self.ray_color(&scattered, depth - 1, world, rng);
+            }
+            return Color::default();
         }
 
         let unit_direction = Vec3::unit_vector(r.direction());

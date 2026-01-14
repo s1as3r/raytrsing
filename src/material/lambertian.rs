@@ -19,12 +19,12 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, r_in: &Ray, rec: &HitRecord, rng: &mut PCG32RNG) -> (Color, Ray) {
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord, rng: &mut PCG32RNG) -> Option<(Color, Ray)> {
         let scatter_direction = {
             let sd = rec.normal + Vec3::random_unit_vector(rng);
             if sd.near_zero() { rec.normal } else { sd }
         };
 
-        return (self.albedo, Ray::new(rec.p, scatter_direction));
+        return Some((self.albedo, Ray::new(rec.p, scatter_direction)));
     }
 }

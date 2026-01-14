@@ -28,8 +28,8 @@ fn main() {
     let mut world = HittableList::default();
     let mat_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
     let mat_center = Rc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
-    let mat_left = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8)));
-    let mat_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2)));
+    let mat_left = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.3));
+    let mat_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 1.0));
 
     let sp_ground = Sphere::new(&Point3::new(0.0, -100.5, -1.0), 100.0, mat_ground.clone());
     let sp_center = Sphere::new(&Point3::new(0.0, 0.0, -1.2), 0.5, mat_center.clone());
