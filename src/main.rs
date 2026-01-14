@@ -18,7 +18,7 @@ use crate::{
     color::{Color, write_color},
     hittable::{HitRecord, Hittable, list::HittableList, sphere::Sphere},
     interval::Interval,
-    material::lambertian::Lambertian,
+    material::{Lambertian, Metal},
     ray::Ray,
     util::{lerp, rand::PCG32RNG},
     vec3::{Point3, Vec3},
@@ -26,12 +26,19 @@ use crate::{
 
 fn main() {
     let mut world = HittableList::default();
-    let mut rng = PCG32RNG::default();
-    let lamb = Rc::new(Lambertian::new(&Vec3::default()));
-    let sp1 = Sphere::new(&Point3::new(0.0, 0.0, -1.0), 0.5, lamb.clone());
-    let sp2 = Sphere::new(&Point3::new(0.0, -100.5, -1.0), 100.0, lamb.clone());
-    world.add(&sp2);
-    world.add(&sp1);
+    let mat_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
+    let mat_center = Rc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
+    let mat_left = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8)));
+    let mat_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2)));
+
+    let sp_ground = Sphere::new(&Point3::new(0.0, -100.5, -1.0), 100.0, mat_ground.clone());
+    let sp_center = Sphere::new(&Point3::new(0.0, 0.0, -1.2), 0.5, mat_center.clone());
+    let sp_left = Sphere::new(&Point3::new(-1.0, 0.0, -1.0), 0.5, mat_left.clone());
+    let sp_right = Sphere::new(&Point3::new(1.0, 0.0, -1.0), 0.5, mat_right.clone());
+    world.add(&sp_ground);
+    world.add(&sp_left);
+    world.add(&sp_right);
+    world.add(&sp_center);
 
     let cam = Camera::new(16.0 / 10.0, 400, 100, 50);
     cam.render(&world);

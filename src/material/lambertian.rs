@@ -10,22 +10,18 @@ use crate::{
 
 pub struct Lambertian {
     albedo: Color,
-    rng: PCG32RNG,
 }
 
 impl Lambertian {
-    pub fn new(albedo: &Color) -> Self {
-        Self {
-            albedo: *albedo,
-            rng: PCG32RNG::default(),
-        }
+    pub fn new(albedo: Color) -> Self {
+        Self { albedo }
     }
 }
 
 impl Material for Lambertian {
-    fn scatter(&mut self, r_in: &Ray, rec: &HitRecord) -> (Color, Ray) {
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord, rng: &mut PCG32RNG) -> (Color, Ray) {
         let scatter_direction = {
-            let sd = rec.normal + Vec3::random_unit_vector(&mut self.rng);
+            let sd = rec.normal + Vec3::random_unit_vector(rng);
             if sd.near_zero() { rec.normal } else { sd }
         };
 

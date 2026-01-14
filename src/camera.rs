@@ -1,4 +1,7 @@
-use std::io::{Write, stdout};
+use std::{
+    io::{Write, stdout},
+    rc::Rc,
+};
 
 use crate::{
     color::{Color, write_color},
@@ -98,9 +101,9 @@ impl Camera {
         // min 0.001: we want to ignore hits that are very close to the intersection
         // point because of floating point imprecision
         // SEE: shadow acne
-        if let Some(rec) = world.hit(r, &Interval::new(0.001, f64::INFINITY)) {
-            let direction = rec.normal + Vec3::random_unit_vector(rng);
-            return 0.5 * self.ray_color(&Ray::new(&rec.p, &direction), depth - 1, world, rng);
+        if let Some(mut rec) = world.hit(r, &Interval::new(0.001, f64::INFINITY)) {
+            let (attenuation, scattered) = rec.mat.scatter(r, &rec, rng);
+            return attenuation * self.ray_color(&scattered, depth - 1, world, rng);
         }
 
         let unit_direction = Vec3::unit_vector(r.direction());
