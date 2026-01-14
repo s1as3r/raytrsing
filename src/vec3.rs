@@ -1,5 +1,7 @@
 use std::ops;
 
+use crate::util::rand::PCG32RNG;
+
 pub type Point3 = Vec3;
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -32,6 +34,22 @@ impl Vec3 {
         f64::sqrt(self.len_squared())
     }
 
+    pub fn random(rng: &mut PCG32RNG) -> Self {
+        Self {
+            e: [rng.random_f64(), rng.random_f64(), rng.random_f64()],
+        }
+    }
+
+    pub fn random_bounded(rng: &mut PCG32RNG, min: f64, max: f64) -> Self {
+        Self {
+            e: [
+                rng.random_bounded_f64(min, max),
+                rng.random_bounded_f64(min, max),
+                rng.random_bounded_f64(min, max),
+            ],
+        }
+    }
+
     #[inline]
     pub fn dot(u: &Vec3, v: &Vec3) -> f64 {
         u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
@@ -51,6 +69,30 @@ impl Vec3 {
     #[inline]
     pub fn unit_vector(v: &Vec3) -> Vec3 {
         *v / v.len()
+    }
+
+    #[inline]
+    pub fn random_unit_vector(rng: &mut PCG32RNG) -> Vec3 {
+        let mut p: Vec3;
+        loop {
+            p = Self::random_bounded(rng, -1.0, 1.0);
+            let lensq = p.len_squared();
+            if (1e-160 < lensq) && (lensq <= 1.0) {
+                // reject very small vlaues as they can lead to
+                // infinities when squared
+                return p / lensq.sqrt();
+            }
+        }
+    }
+
+    #[inline]
+    pub fn random_on_hemisphere(rng: &mut PCG32RNG, normal: &Vec3) -> Vec3 {
+        let on_unit_sphere = Self::random_unit_vector(rng);
+        if Self::dot(&on_unit_sphere, normal) > 0.0 {
+            on_unit_sphere
+        } else {
+            -on_unit_sphere
+        }
     }
 }
 

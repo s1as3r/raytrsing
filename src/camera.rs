@@ -66,14 +66,14 @@ impl Camera {
 
         let mut rng = PCG32RNG::default();
         for j in 0..self.image_height {
-            eprint!("\rscanlines remaining: {}", self.image_height - j);
+            eprint!("\rscanlines remaining: {:>04}", self.image_height - j);
             let _ = std::io::stderr().flush();
             for i in 0..self.image_width {
                 let mut pixel_color = Color::default();
                 let mut r: Ray;
                 for sample in 0..self.samples_per_pixel {
                     r = self.get_ray(i, j, &mut rng);
-                    pixel_color += self.ray_color(&r, world);
+                    pixel_color += self.ray_color(&r, world, &mut rng);
                 }
 
                 write_color(&mut stdout(), &(pixel_color * self.pixel_samples_scale));
@@ -82,11 +82,12 @@ impl Camera {
         eprintln!("\rDone.                        ");
     }
 
-    fn ray_color(&self, r: &Ray, world: &dyn Hittable) -> Color {
+    fn ray_color(&self, r: &Ray, world: &dyn Hittable, rng: &mut PCG32RNG) -> Color {
         let mut rec = HitRecord::default();
 
         if (world.hit(r, &Interval::new(0.0, f64::INFINITY), &mut rec)) {
-            return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
+            let direction = Vec3::random_on_hemisphere(rng, &rec.normal);
+            return 0.5 * self.ray_color(&Ray::new(&rec.p, &direction), world, rng);
         }
 
         let unit_direction = Vec3::unit_vector(r.direction());
