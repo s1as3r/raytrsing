@@ -113,10 +113,9 @@ impl Camera {
         }
     }
 
-    pub fn render(&self, world: &dyn Hittable) {
+    pub fn render(&self, world: &dyn Hittable, rng: &mut PCG32RNG) {
         println!("P3\n{} {}\n255", self.image_width, self.image_height);
 
-        let mut rng = PCG32RNG::default();
         for j in 0..self.image_height {
             eprint!("\rscanlines remaining: {:>04}", self.image_height - j);
             let _ = std::io::stderr().flush();
@@ -124,8 +123,8 @@ impl Camera {
                 let mut pixel_color = Color::default();
                 let mut r: Ray;
                 for sample in 0..self.samples_per_pixel {
-                    r = self.get_ray(i, j, &mut rng);
-                    pixel_color += self.ray_color(&r, self.max_depth, world, &mut rng);
+                    r = self.get_ray(i, j, rng);
+                    pixel_color += self.ray_color(&r, self.max_depth, world, rng);
                 }
 
                 write_color(&mut stdout(), &(pixel_color * self.pixel_samples_scale));

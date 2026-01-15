@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::{
     hittable::{HitRecord, Hittable},
     interval::Interval,
@@ -5,12 +7,12 @@ use crate::{
 };
 
 #[derive(Default)]
-pub struct HittableList<'a> {
-    pub objects: Vec<&'a dyn Hittable>,
+pub struct HittableList {
+    pub objects: Vec<Rc<dyn Hittable>>,
 }
 
-impl<'a> HittableList<'a> {
-    pub fn new(object: &'a dyn Hittable) -> Self {
+impl HittableList {
+    pub fn new(object: Rc<dyn Hittable>) -> Self {
         Self {
             objects: vec![object],
         }
@@ -20,18 +22,18 @@ impl<'a> HittableList<'a> {
         self.objects.clear()
     }
 
-    pub fn add(&mut self, object: &'a dyn Hittable) {
+    pub fn add(&mut self, object: Rc<dyn Hittable>) {
         self.objects.push(object);
     }
 }
 
-impl Hittable for HittableList<'_> {
+impl Hittable for HittableList {
     fn hit(&self, r: &Ray, ray_t: &Interval) -> Option<HitRecord> {
         let mut hit_anything = false;
         let mut closest_so_far = ray_t.max;
         let mut rec = None;
 
-        for &obj in &self.objects {
+        for obj in &self.objects {
             if let Some(t_rec) = obj.hit(r, &Interval::new(ray_t.min, closest_so_far)) {
                 hit_anything = true;
                 closest_so_far = t_rec.t;
