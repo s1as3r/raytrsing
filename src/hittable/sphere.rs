@@ -15,11 +15,11 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: &Point3, radius: f64, mat: Rc<dyn Material>) -> Self {
+    pub fn new(center: Point3, radius: f64, mat: Rc<dyn Material>) -> Self {
         Self {
-            center: *center,
+            center,
+            mat,
             radius: f64::max(0.0, radius),
-            mat: mat,
         }
     }
 }

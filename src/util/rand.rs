@@ -37,6 +37,10 @@ impl Default for PCG32RNG {
 }
 
 impl PCG32RNG {
+    pub fn new(state: u64, inc: u64) -> Self {
+        Self { state, inc }
+    }
+
     pub fn random(&mut self) -> u32 {
         let oldstate = self.state;
 
