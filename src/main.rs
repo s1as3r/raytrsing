@@ -9,6 +9,7 @@ mod util;
 mod vec3;
 
 use std::{
+    f64,
     io::{Write, stdout},
     rc::Rc,
 };
@@ -26,23 +27,17 @@ use crate::{
 
 fn main() {
     let mut world = HittableList::default();
-    let mat_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let mat_center = Rc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
-    let mat_left = Rc::new(Dielectric::new(1.50));
-    let mat_bubble = Rc::new(Dielectric::new(1.00 / 1.50));
-    let mat_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 1.0));
+    let radius = (f64::consts::PI / 4.0).cos();
 
-    let sp_ground = Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, mat_ground.clone());
-    let sp_center = Sphere::new(Point3::new(0.0, 0.0, -1.2), 0.5, mat_center.clone());
-    let sp_left = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, mat_left.clone());
-    let sp_bubble = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.4, mat_bubble.clone());
-    let sp_right = Sphere::new(Point3::new(1.0, 0.0, -1.0), 0.5, mat_right.clone());
-    world.add(&sp_ground);
+    let mat_left = Rc::new(Lambertian::new(Color::new(0.0, 0.0, 1.0)));
+    let mat_right = Rc::new(Lambertian::new(Color::new(1.0, 0.0, 0.0)));
+
+    let sp_left = Sphere::new(Point3::new(-radius, 0.0, -1.0), radius, mat_left.clone());
+    let sp_right = Sphere::new(Point3::new(radius, 0.0, -1.0), radius, mat_right.clone());
+
     world.add(&sp_left);
     world.add(&sp_right);
-    world.add(&sp_bubble);
-    world.add(&sp_center);
 
-    let cam = Camera::new(16.0 / 10.0, 400, 100, 50);
+    let cam = Camera::new(16.0 / 10.0, 400, 100, 50, 90.0);
     cam.render(&world);
 }
