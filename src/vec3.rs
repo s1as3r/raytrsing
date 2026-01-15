@@ -113,6 +113,21 @@ impl Vec3 {
             -on_unit_sphere
         }
     }
+
+    #[inline]
+    pub fn random_in_unit_disk(rng: &mut PCG32RNG) -> Self {
+        loop {
+            let p = Vec3::new(
+                rng.random_bounded_f64(-1.0, 1.0),
+                rng.random_bounded_f64(-1.0, 1.0),
+                0.0,
+            );
+
+            if p.len_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
 }
 
 impl ops::Neg for Vec3 {
