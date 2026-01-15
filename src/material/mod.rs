@@ -1,10 +1,10 @@
+mod dielectric;
 mod lambertian;
 mod metal;
 
 use crate::{color::Color, hittable::HitRecord, ray::Ray, util::rand::PCG32RNG};
 
-pub use lambertian::Lambertian;
-pub use metal::Metal;
+pub use self::{dielectric::Dielectric, lambertian::Lambertian, metal::Metal};
 
 pub trait Material {
     // returns: attenuatoin, scattered ray

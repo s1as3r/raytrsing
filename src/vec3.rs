@@ -61,10 +61,10 @@ impl Vec3 {
     }
 
     #[inline]
-    pub fn refract(uv: &Self, n: &Self, etai_ovar_etat: f64) -> Self {
+    pub fn refract(uv: &Self, n: &Self, ri: f64) -> Self {
         let cos_theta = Self::dot(&-*uv, n).min(1.0);
-        let r_out_perp = etai_ovar_etat * (*uv + cos_theta * *n);
-        let r_out_parallel = (1.0 - r_out_perp.len_squared()).abs().sqrt() * *n;
+        let r_out_perp = ri * (*uv + cos_theta * *n);
+        let r_out_parallel = -(1.0 - r_out_perp.len_squared()).abs().sqrt() * *n;
 
         r_out_perp + r_out_parallel
     }
