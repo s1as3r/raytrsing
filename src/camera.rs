@@ -108,7 +108,7 @@ impl Camera {
             return Color::default();
         }
 
-        let unit_direction = Vec3::unit_vector(r.direction());
+        let unit_direction = r.direction().unit_vector();
         let a = 0.5 * (unit_direction.y() + 1.0);
         util::lerp(Color::new(1.0, 1.0, 1.0), Color::new(0.5, 0.7, 1.0), a)
     }
