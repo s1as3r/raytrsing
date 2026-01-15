@@ -38,6 +38,15 @@ fn main() {
     world.add(&sp_left);
     world.add(&sp_right);
 
-    let cam = Camera::new(16.0 / 10.0, 400, 100, 50, 90.0);
+    let cam = Camera::new(
+        16.0 / 10.0,
+        400,
+        100,
+        50,
+        90.0,
+        Point3::new(-2.0, 2.0, 1.0),
+        Point3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+    );
     cam.render(&world);
 }
