@@ -1,7 +1,7 @@
 use std::{cell::Ref, rc::Rc};
 
-use super::{HitRecord, Hittable};
 use crate::{
+    hittable::{HitRecord, Hittable},
     interval::Interval,
     material::Material,
     ray::Ray,
