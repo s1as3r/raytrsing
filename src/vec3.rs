@@ -52,7 +52,7 @@ impl Vec3 {
 
     pub fn near_zero(&self) -> bool {
         const EPS: f64 = 1e-8;
-        self.e.iter().fold(true, |f, v| f && (v.abs() < EPS))
+        self.e.iter().all(|v| v.abs() < EPS)
     }
 
     #[inline]
@@ -172,7 +172,7 @@ impl ops::MulAssign<f64> for Vec3 {
 
 impl ops::DivAssign<f64> for Vec3 {
     fn div_assign(&mut self, rhs: f64) {
-        *self *= (1.0 / rhs);
+        *self *= 1.0 / rhs;
     }
 }
 

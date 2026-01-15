@@ -1,4 +1,4 @@
-use std::{cell::Ref, rc::Rc};
+use std::rc::Rc;
 
 use crate::{
     hittable::{HitRecord, Hittable},

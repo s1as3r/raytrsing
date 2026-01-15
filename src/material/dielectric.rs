@@ -1,7 +1,6 @@
 use crate::{
     color::Color,
-    hittable::{HitRecord, Hittable},
-    interval::Interval,
+    hittable::HitRecord,
     material::Material,
     ray::Ray,
     util::rand::PCG32RNG,
@@ -27,7 +26,7 @@ impl Dielectric {
 impl Material for Dielectric {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord, rng: &mut PCG32RNG) -> Option<(Color, Ray)> {
         let ri = if rec.front_face {
-            (1.0 / self.refractive_index)
+            1.0 / self.refractive_index
         } else {
             self.refractive_index
         };

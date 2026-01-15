@@ -1,4 +1,3 @@
-#![allow(dead_code, unused)]
 mod camera;
 mod color;
 mod hittable;
@@ -8,32 +7,25 @@ mod ray;
 mod util;
 mod vec3;
 
-use std::{
-    f64,
-    io::{Write, stdout},
-    rc::Rc,
-};
+use std::{io, rc::Rc};
 
 use crate::{
     camera::Camera,
-    color::{Color, write_color},
-    hittable::{HitRecord, Hittable, list::HittableList, sphere::Sphere},
-    interval::Interval,
+    color::Color,
+    hittable::{list::HittableList, sphere::Sphere},
     material::{Dielectric, Lambertian, Material, Metal},
-    ray::Ray,
-    util::{lerp, rand::PCG32RNG},
+    util::rand::PCG32RNG,
     vec3::{Point3, Vec3},
 };
 
-fn main() {
+fn main() -> io::Result<()> {
     let mut world = HittableList::default();
     let mut rng = PCG32RNG::default();
 
-    let mat_ground = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
     let sp_ground = Rc::new(Sphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
-        mat_ground.clone(),
+        Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5))),
     ));
     world.add(sp_ground.clone());
 
@@ -62,22 +54,31 @@ fn main() {
                         Rc::new(Dielectric::new(1.5))
                     }
                 };
-                let sp = Rc::new(Sphere::new(center, 0.2, sphere_mat.clone()));
+                let sp = Rc::new(Sphere::new(center, 0.2, sphere_mat));
                 world.add(sp.clone());
             }
         }
     }
 
-    let mat1 = Rc::new(Dielectric::new(1.5));
-    let sp1 = Rc::new(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, mat1.clone()));
+    let sp1 = Rc::new(Sphere::new(
+        Point3::new(0.0, 1.0, 0.0),
+        1.0,
+        Rc::new(Dielectric::new(1.5)),
+    ));
     world.add(sp1.clone());
 
-    let mat2 = Rc::new(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
-    let sp2 = Rc::new(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, mat2.clone()));
+    let sp2 = Rc::new(Sphere::new(
+        Point3::new(-4.0, 1.0, 0.0),
+        1.0,
+        Rc::new(Lambertian::new(Color::new(0.4, 0.2, 0.1))),
+    ));
     world.add(sp2.clone());
 
-    let mat3 = Rc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
-    let sp3 = Rc::new(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, mat3.clone()));
+    let sp3 = Rc::new(Sphere::new(
+        Point3::new(4.0, 1.0, 0.0),
+        1.0,
+        Rc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0)),
+    ));
     world.add(sp3.clone());
 
     let cam = Camera::new(
@@ -92,5 +93,5 @@ fn main() {
         0.6,
         10.0,
     );
-    cam.render(&world, &mut rng);
+    cam.render(&world, &mut rng)
 }

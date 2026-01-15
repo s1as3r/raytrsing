@@ -1,10 +1,7 @@
 pub mod list;
 pub mod sphere;
 
-use std::{
-    cell::{Ref, RefCell},
-    rc::Rc,
-};
+use std::rc::Rc;
 
 use crate::{
     interval::Interval,

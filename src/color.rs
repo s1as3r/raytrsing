@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::io::{self, Write};
 
 use crate::{interval::Interval, vec3};
 
@@ -13,7 +13,7 @@ pub fn linear_to_gamma(linear_component: f64) -> f64 {
     }
 }
 
-pub fn write_color<T: Write>(out: &mut T, pixel_color: &Color) {
+pub fn write_color<T: Write>(out: &mut T, pixel_color: &Color) -> io::Result<()> {
     let r = linear_to_gamma(pixel_color.x());
     let g = linear_to_gamma(pixel_color.y());
     let b = linear_to_gamma(pixel_color.z());
@@ -28,5 +28,5 @@ pub fn write_color<T: Write>(out: &mut T, pixel_color: &Color) {
     let gbyte = (256.0 * INTENSITY.clamp(g)) as i32;
     let bbyte = (256.0 * INTENSITY.clamp(b)) as i32;
 
-    out.write_fmt(format_args!("{} {} {}\n", rbyte, gbyte, bbyte));
+    out.write_fmt(format_args!("{} {} {}\n", rbyte, gbyte, bbyte))
 }

@@ -5,6 +5,7 @@ pub struct Interval {
 }
 
 impl Interval {
+    #[allow(unused)]
     pub const EMPTY: Self = Self {
         min: f64::INFINITY,
         max: -f64::INFINITY,
@@ -19,10 +20,12 @@ impl Interval {
         Self { min, max }
     }
 
+    #[allow(unused)]
     pub fn size(&self) -> f64 {
         self.max - self.min
     }
 
+    #[allow(unused)]
     pub fn contains(&self, x: f64) -> bool {
         self.min <= x && x <= self.max
     }

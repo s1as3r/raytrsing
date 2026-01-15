@@ -1,17 +1,15 @@
-use std::{
-    io::{Write, stdout},
-    rc::Rc,
-};
+use std::io::{self, Write, stdout};
 
 use crate::{
     color::{Color, write_color},
-    hittable::{HitRecord, Hittable},
+    hittable::Hittable,
     interval::Interval,
     ray::Ray,
     util::{self, rand::PCG32RNG},
     vec3::{Point3, Vec3},
 };
 
+#[allow(dead_code)]
 pub struct Camera {
     aspect_ratio: f64,
     image_width: i32,
@@ -43,6 +41,7 @@ pub struct Camera {
 }
 
 impl Camera {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         aspect_ratio: f64,
         image_width: i32,
@@ -113,7 +112,7 @@ impl Camera {
         }
     }
 
-    pub fn render(&self, world: &dyn Hittable, rng: &mut PCG32RNG) {
+    pub fn render(&self, world: &dyn Hittable, rng: &mut PCG32RNG) -> io::Result<()> {
         println!("P3\n{} {}\n255", self.image_width, self.image_height);
 
         for j in 0..self.image_height {
@@ -122,15 +121,16 @@ impl Camera {
             for i in 0..self.image_width {
                 let mut pixel_color = Color::default();
                 let mut r: Ray;
-                for sample in 0..self.samples_per_pixel {
+                for _ in 0..self.samples_per_pixel {
                     r = self.get_ray(i, j, rng);
                     pixel_color += self.ray_color(&r, self.max_depth, world, rng);
                 }
 
-                write_color(&mut stdout(), &(pixel_color * self.pixel_samples_scale));
+                write_color(&mut stdout(), &(pixel_color * self.pixel_samples_scale))?;
             }
         }
         eprintln!("\rDone.                        ");
+        Ok(())
     }
 
     fn ray_color(&self, r: &Ray, depth: i32, world: &dyn Hittable, rng: &mut PCG32RNG) -> Color {
@@ -141,7 +141,7 @@ impl Camera {
         // min 0.001: we want to ignore hits that are very close to the intersection
         // point because of floating point imprecision
         // SEE: shadow acne
-        if let Some(mut rec) = world.hit(r, &Interval::new(0.001, f64::INFINITY)) {
+        if let Some(rec) = world.hit(r, &Interval::new(0.001, f64::INFINITY)) {
             if let Some((attenuation, scattered)) = rec.mat.scatter(r, &rec, rng) {
                 return attenuation * self.ray_color(&scattered, depth - 1, world, rng);
             }
